@@ -1,0 +1,15 @@
+{% extends "blog/base.html" %}
+{% block content %}
+    {% for bill in bills %}
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">{{ bill.name }}</a>
+              <small class="text-muted">{{ bill.date_posted|date:"F d, Y, h:i a" }}</small>
+            </div>
+            <p class="article-content">{{ bill.content }}</p>
+            <p class="article-content">{{ bill.number }}</p>
+          </div>
+        </article>
+    {% endfor %}
+{% endblock content %}
