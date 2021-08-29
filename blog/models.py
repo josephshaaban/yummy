@@ -20,18 +20,6 @@ class Item(models.Model):
     double_meal_price = models.PositiveIntegerField(
         blank=False, null=False,
     )
-    double = models.BooleanField(default=False)
-    meal = models.BooleanField(default=False)
-
-    @property
-    def price(self):
-        if self.double and self.meal:
-            return self.double_meal_price
-        if self.meal:
-            return self.meal_price
-        if self.double:
-            return self.double_price
-        return self.item_price
 
 
 class Order(models.Model):
@@ -42,19 +30,30 @@ class Order(models.Model):
         blank=False, null=False,
     )
     count = models.PositiveIntegerField(default=1)
+    double = models.BooleanField(default=False)
+    meal = models.BooleanField(default=False)
     notes = models.TextField(
         blank=True, null=True,
     )
 
     @property
-    def total(self) -> int:
+    def price(self):
+        item_price = 0
         try:
             item_ = Item.objects.get(item=self.item)
-            return item_.price * self.count
+            if self.double and self.meal:
+                item_price = item_.double_meal_price
+            if self.meal:
+                item_price = item_.meal_price
+            if self.double:
+                item_price = item_.double_price
+
+            item_price = item_.item_price
+            return item_price * self.count
         except ObjectDoesNotExist:
-            return 0
+            return item_price
         except MultipleObjectsReturned:
-            return 0
+            return item_price
 
 
 class Bill(models.Model):
@@ -62,7 +61,7 @@ class Bill(models.Model):
     purchase = models.ManyToManyField(
         Order,
         related_name='orders',
-        blank=False, null=False,
+        blank=False,
     )
     client_name = models.CharField(
         max_length=50,
