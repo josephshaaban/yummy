@@ -18,7 +18,6 @@ class BillCreateView(CreateView):
     model = Bill
     fields = ['date_posted', 'client_name']
 
-
     def form_valid(self, form):
         return super().form_valid(form)
 
