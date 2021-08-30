@@ -17,13 +17,6 @@ class BillCreateView(CreateView):
         return super().form_valid(form)
 
 
-def recent_bills(request):
-    context = {
-        'bills': Bill.objects.all()
-    }
-    return render(request, 'blog/recent_bills.html', context)
-
-
 class BillListView(ListView):
     model = Bill
     template_name = 'blog/recent_bills.html'  # <app>/<model>_<viewtype>.html
