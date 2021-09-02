@@ -8,5 +8,6 @@ urlpatterns = [
     path('recent_bills/', views.BillListView.as_view(), name='recent_bills'),
     path('inventory/', views.InventoryCreateView.as_view(), name='inventory'),
     path('inventory_log/', views.InventoryLogListView.as_view(), name='inventory_log'),
+    
 ]
 
