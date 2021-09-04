@@ -11,22 +11,19 @@ class Item(models.Model):
     item_price = models.PositiveIntegerField(
         blank=False, null=False,
     )
-    double_price = models.PositiveIntegerField(
-        blank=False, null=False,
-    )
-    meal_price = models.PositiveIntegerField(
-        blank=False, null=False,
-    )
-    double_meal_price = models.PositiveIntegerField(
-        blank=False, null=False,
-    )
+    double_price = models.PositiveIntegerField(blank=True, null=True)
+    meal_price = models.PositiveIntegerField(blank=True, null=True)
+    double_meal_price = models.PositiveIntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return str(self.name)
 
 
 class Order(models.Model):
     item = models.ForeignKey(
         Item,
         models.PROTECT,
-        related_name='items',
+        related_name='orders',
         blank=False, null=False,
     )
     count = models.PositiveIntegerField(default=1)
@@ -38,29 +35,33 @@ class Order(models.Model):
 
     @property
     def price(self):
-        item_price = 0
-        try:
-            item_ = Item.objects.get(item=self.item)
-            if self.double and self.meal:
-                item_price = item_.double_meal_price
-            if self.meal:
-                item_price = item_.meal_price
-            if self.double:
-                item_price = item_.double_price
+        count_ = int(self.count)
+        if self.double and self.meal:
+            return count_ * self.item.double_meal_price
+        if self.meal:
+            return count_ * self.item.meal_price
+        if self.double:
+            return count_ * self.item.double_price
 
-            item_price = item_.item_price
-            return item_price * self.count
-        except ObjectDoesNotExist:
-            return item_price
-        except MultipleObjectsReturned:
-            return item_price
+        return count_ * self.item.item_price
+
+    def __str__(self):
+        # item_ = Item.objects.get(item=self.item)
+        str_ = str(self.item)
+        # str_ = ''
+        if self.double:
+            str_ += ', double'
+        if self.meal:
+            str_ += ' meal'
+        str_ += f', {self.price}'
+        return str_
 
 
 class Bill(models.Model):
     # TODO: add delivery Boolean field and address CharField.
-    purchase = models.ManyToManyField(
+    orders = models.ManyToManyField(
         Order,
-        related_name='orders',
+        related_name='bills',
         blank=False,
     )
     client_name = models.CharField(
@@ -68,11 +69,15 @@ class Bill(models.Model):
         blank=False, null=False,
     )
     date_posted = models.DateTimeField(default=timezone.now)
+    delivery = models.BooleanField(default=False)
 
     @property
     def cost(self):
         cost_ = 0
         # TODO: iterate on all orders
-        for order in self.purchase:
-            cost_ += order.total
+        for order in self.orders.all():
+            cost_ += order.price
         return cost_
+
+    def __str__(self):
+        return f'{self.client_name}, cost: {self.cost}'
