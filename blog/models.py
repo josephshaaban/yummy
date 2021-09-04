@@ -19,6 +19,25 @@ class Item(models.Model):
         return str(self.name)
 
 
+class Bill(models.Model):
+    client_name = models.CharField(
+        max_length=50,
+        blank=False, null=False,
+    )
+    date_posted = models.DateTimeField(default=timezone.now)
+    delivery = models.BooleanField(default=False)
+
+    @property
+    def cost(self):
+        cost_ = 0
+        for order in self.orders.all():
+            cost_ += order.price
+        return cost_
+
+    def __str__(self):
+        return f'{self.client_name}, cost: {self.cost}'
+
+
 class Order(models.Model):
     item = models.ForeignKey(
         Item,
@@ -30,6 +49,12 @@ class Order(models.Model):
     double = models.BooleanField(default=False)
     meal = models.BooleanField(default=False)
     notes = models.TextField(
+        blank=True, null=True,
+    )
+    bill = models.ForeignKey(
+        Bill,
+        models.PROTECT,
+        related_name='orders',
         blank=True, null=True,
     )
 
@@ -55,29 +80,3 @@ class Order(models.Model):
             str_ += ' meal'
         str_ += f', {self.price}'
         return str_
-
-
-class Bill(models.Model):
-    # TODO: add delivery Boolean field and address CharField.
-    orders = models.ManyToManyField(
-        Order,
-        related_name='bills',
-        blank=False,
-    )
-    client_name = models.CharField(
-        max_length=50,
-        blank=False, null=False,
-    )
-    date_posted = models.DateTimeField(default=timezone.now)
-    delivery = models.BooleanField(default=False)
-
-    @property
-    def cost(self):
-        cost_ = 0
-        # TODO: iterate on all orders
-        for order in self.orders.all():
-            cost_ += order.price
-        return cost_
-
-    def __str__(self):
-        return f'{self.client_name}, cost: {self.cost}'
