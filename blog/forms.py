@@ -20,7 +20,7 @@ class BillModelForm(forms.ModelForm):
 
 
 class BillForm(forms.ModelForm):
-
+    # todo: exclude and validate date_posted
     class Meta:
         model = Bill
         fields = '__all__'
@@ -35,11 +35,11 @@ class BillForm(forms.ModelForm):
         self.helper.layout = Layout(
             Div(
                 Field('client_name'),
-                Field('date_posted'),
                 Field('delivery'),
                 Fieldset(
-                    'Add orders',
-                    Formset('orders')
+                    '',
+                    Formset('orders'),
+                    css_class='orders-fieldset'
                 ),
                 HTML("<br>"),
                 ButtonHolder(Submit('submit', 'save')),
