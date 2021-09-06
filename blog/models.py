@@ -39,6 +39,7 @@ class Bill(models.Model):
 
 
 class Order(models.Model):
+    # todo: add delivery prices and bread type
     item = models.ForeignKey(
         Item,
         models.PROTECT,
