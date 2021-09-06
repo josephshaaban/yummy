@@ -130,3 +130,11 @@ LOGIN_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+
+CRISPY_CLASS_CONVERTERS = {
+    'textinput': "form-control cst__radius",
+    'textarea': "form-control md-textarea rounded-1",
+    'select': "form-control cst__radius",
+    'checkbox': "checkboxinput custom-control-input"
+}

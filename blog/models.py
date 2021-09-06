@@ -1,6 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import models
 from django.utils import timezone
+from django.forms import widgets
 
 
 class Item(models.Model):

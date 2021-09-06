@@ -1,6 +1,7 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Fieldset, Div, HTML, ButtonHolder, Submit
 from django import forms
+from django.forms import widgets
 from django.forms import inlineformset_factory
 
 from blog.custom_layout_object import Formset
@@ -11,6 +12,17 @@ class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
         fields = '__all__'
+        widgets = {
+            'count': forms.Select(attrs={
+                'width': 'auto'
+            }),
+            'double': forms.CheckboxInput(attrs={'class': 'checkboxinput custom-control-input'}),
+            'meal': forms.CheckboxInput(attrs={'class': 'checkboxinput custom-control-input'}),
+            'notes': forms.Textarea(attrs={
+                'cols': '30', 'rows': '5', 'class': 'round-0'
+            })
+
+        }
 
 
 class BillModelForm(forms.ModelForm):
