@@ -1,14 +1,16 @@
 from django.db import transaction
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, reverse
 from django.urls import reverse_lazy
 from django.views.generic import (
     ListView,
     CreateView,
+)
+from django.views.generic import (
     UpdateView, DetailView, DeleteView)
 
-from .forms import OrderForm, BaseOrderFormSet, BillModelForm, OrderInlineFormSet, BillForm
-from .models import Bill, Order
+from .forms import BillModelForm, OrderInlineFormSet, BillForm
+from .models import Bill, Order, Inventory
 
 
 def home(request):
@@ -154,3 +156,21 @@ class BillDelete(DeleteView):
 class BillList(ListView):
     model = Bill
     template_name = 'blog/bill_list.html'
+
+
+class InventoryCreateView(CreateView):
+    model = Inventory
+    fields = ['element', 'price', 'quantity', 'timestamp']
+
+    def form_valid(self, form):
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('inventory_log')
+
+
+class InventoryLogListView(ListView):
+    model = Inventory
+    template_name = 'blog/inventory_log.html'
+    context_object_name = 'inventory_log'
+    ordering = ['timestamp']

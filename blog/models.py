@@ -82,3 +82,18 @@ class Order(models.Model):
             str_ += ' meal'
         str_ += f', {self.price}'
         return str_
+
+
+class Inventory(models.Model):
+    element = models.CharField(
+        max_length=40,
+        blank=False, null=False,
+    )
+    price = models.PositiveIntegerField(
+        blank=False, null=False,
+    )
+    quantity = models.CharField(
+        max_length = 50,
+        blank=False, null=False,
+    )
+    timestamp = models.DateTimeField(default=timezone.now)

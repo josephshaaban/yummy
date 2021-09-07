@@ -1,0 +1,15 @@
+{% extends "blog/base.html" %}
+{% block content %}
+    {% for inventory in inventory_log %}
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">{{ inventory.element }}</a>
+              <small class="text-muted">{{ inventory.timestamp|date:"F d, Y, h:i a" }}</small>
+            </div>
+            <p class="article-content">{{ inventory.price }}</p>
+            <p class="article-content">{{ inventory.quantity }}</p>
+          </div>
+        </article>
+    {% endfor %}
+{% endblock content %}
