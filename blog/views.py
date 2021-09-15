@@ -128,8 +128,8 @@ class BillCreate(CreateView):
             form.save()
         return super().form_valid(form)
 
-    # def get_success_url(self):
-    #     return reverse_lazy('bill_detail', kwargs={'pk': self.object.pk})
+    def get_success_url(self):
+        return reverse_lazy('bill_create')
 
     # def get(self, request, *args, **kwargs):
     #     return self.render_to_response(self.get_context_data())

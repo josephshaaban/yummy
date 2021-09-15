@@ -12,9 +12,12 @@ class Item(models.Model):
     item_price = models.PositiveIntegerField(
         blank=False, null=False,
     )
-    double_price = models.PositiveIntegerField(blank=True, null=True)
-    meal_price = models.PositiveIntegerField(blank=True, null=True)
-    double_meal_price = models.PositiveIntegerField(blank=True, null=True)
+    double_price = models.PositiveIntegerField(default=0,
+                                               blank=True, null=True)
+    meal_price = models.PositiveIntegerField(default=0,
+                                             blank=True, null=True)
+    double_meal_price = models.PositiveIntegerField(default=0,
+                                                    blank=True, null=True)
 
     def __str__(self):
         return str(self.name)
