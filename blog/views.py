@@ -2,10 +2,12 @@ from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views.generic import (
     ListView,
+    UpdateView, DetailView, DeleteView,
     CreateView,
-    UpdateView, DetailView, DeleteView)
+)
 
 from .forms import OrderForm, BaseOrderFormSet, BillModelForm, OrderInlineFormSet, BillForm
 from .models import Bill, Order
@@ -91,29 +93,54 @@ class BillCreate(CreateView):
     model = Bill
     template_name = 'blog/bill_create.html'
     form_class = BillForm
-    success_url = None
+    success_url = ''
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # self.object = form.instance
 
     def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
+        if 'form' not in kwargs:
+            kwargs['form'] = self.get_form()
+        kwargs.setdefault('view', self)
+        if self.extra_context is not None:
+            kwargs.update(self.extra_context)
         if self.request.POST:
-            data['orders'] = OrderInlineFormSet(self.request.POST)
+            kwargs['orders'] = OrderInlineFormSet(self.request.POST)
+            kwargs['date_posted'] = timezone.now()
         else:
-            data['orders'] = OrderInlineFormSet()
-        return data
+            kwargs['orders'] = OrderInlineFormSet()
+        return kwargs
 
     def form_valid(self, form):
         context = self.get_context_data()
         orders = context['orders']
         with transaction.atomic():
             form.instance.created_by = self.request.user
-            self.object = form.save()
+            # self.object = form.instance.create()
+            self.object = form.save(commit=True)
+            self.object.save()
             if orders.is_valid():
-                orders.instance = self.object
-                orders.save()
+                for order in orders:
+                    # order_ = order.save()
+                    order.instance.bill = self.object
+                    order.save()
+            form.save()
         return super().form_valid(form)
 
-    def get_success_url(self):
-        return reverse_lazy('bill_detail', kwargs={'pk': self.object.pk})
+    # def get_success_url(self):
+    #     return reverse_lazy('bill_detail', kwargs={'pk': self.object.pk})
+
+    # def get(self, request, *args, **kwargs):
+    #     return self.render_to_response(self.get_context_data())
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        # form.data['date_posted'] = timezone.now()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
 
 class BillUpdate(UpdateView):
@@ -137,7 +164,7 @@ class BillUpdate(UpdateView):
             form.instance.created_by = self.request.user
             self.object = form.save()
             if orders.is_valid():
-                orders.instance = self.object
+                orders.bill = self.object
                 orders.save()
         return super().form_valid(form)
 
@@ -153,4 +180,5 @@ class BillDelete(DeleteView):
 
 class BillList(ListView):
     model = Bill
+    ordering = '-date_posted'
     template_name = 'blog/bill_list.html'

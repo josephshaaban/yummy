@@ -3,6 +3,7 @@ from crispy_forms.layout import Layout, Field, Fieldset, Div, HTML, ButtonHolder
 from django import forms
 from django.forms import widgets
 from django.forms import inlineformset_factory
+from django.utils import timezone
 
 from blog.custom_layout_object import Formset
 from blog.models import Order, Bill
@@ -47,6 +48,7 @@ class BillForm(forms.ModelForm):
         self.helper.layout = Layout(
             Div(
                 Field('client_name'),
+                Field('date_posted'),
                 Field('delivery'),
                 Fieldset(
                     '',
@@ -57,6 +59,12 @@ class BillForm(forms.ModelForm):
                 ButtonHolder(Submit('submit', 'save')),
                 )
             )
+
+    # def clean(self):
+    #     cleaned_data = super().clean()
+    #     cleaned_data['date_posted'] = timezone.now()
+    #
+    #     return cleaned_data
 
 
 class BaseOrderFormSet(forms.BaseInlineFormSet):
