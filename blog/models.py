@@ -47,7 +47,10 @@ class Order(models.Model):
         related_name='orders',
         blank=False, null=False,
     )
-    count = models.PositiveIntegerField(default=1)
+    count = models.PositiveIntegerField(
+        default=1,
+        choices=[(i, str(i)) for i in range(1, 100)],
+    )
     double = models.BooleanField(default=False)
     meal = models.BooleanField(default=False)
     notes = models.TextField(

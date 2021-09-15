@@ -47,10 +47,10 @@ ul {
   background-color: #FFFA01FF;
 }
 
-.content-section {
-  background: #ffffff;
+article.content-section {
+  background: #3a3a3a;
   padding: 10px 20px;
-  border: 1px solid #dddddd;
+  border: 1px solid #FFFA01FF;
   border-radius: 3px;
   margin-bottom: 20px;
 }
