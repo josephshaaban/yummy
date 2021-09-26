@@ -14,7 +14,7 @@ class ItemCategories(Enum):
 
 class Item(models.Model):
     category = models.CharField(max_length=40,
-                                choices=[(item_category.name, item_category.name) for item_category in ItemCategories])
+                                choices=[(item_category.name, item_category.value) for item_category in ItemCategories])
     name = models.CharField(
         max_length=40,
         blank=False, null=False,

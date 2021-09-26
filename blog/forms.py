@@ -32,12 +32,12 @@ class OrderForm(forms.ModelForm):
 
 class OrderModelForm(forms.ModelForm):
     category = forms.ChoiceField(
-        choices=[(item_category.name, item_category.name) for item_category in ItemCategories],
+        choices=[(item_category.name, item_category.value) for item_category in ItemCategories],
         required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['item'].queryset = Item.objects.filter(category=Item.category)
+        # self.fields['item'].queryset = Item.objects.filter(category=Item.category)
 
     field_order = ['category', 'item', 'bread', 'count', 'meal', 'double', 'notes']
 

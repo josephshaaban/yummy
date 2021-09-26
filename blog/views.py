@@ -10,7 +10,7 @@ from django.views.generic import (
 )
 
 from .forms import OrderForm, BaseOrderFormSet, BillModelForm, OrderInlineFormSet, BillForm
-from .models import Bill, Order, Inventory
+from .models import Bill, Order, Inventory, Item
 
 
 def home(request):
@@ -87,6 +87,11 @@ class BillDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+
+
+def items_dropdown(request, category):
+    items = Item.objects.filter(category=category).values('pk', 'name')
+    return render(request, 'blog/items_dropdown_options.html', {'items': items})
 
 
 class BillCreate(CreateView):

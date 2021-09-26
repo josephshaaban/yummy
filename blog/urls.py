@@ -21,5 +21,7 @@ urlpatterns = [
     path('bill/delete/<int:pk>/', views.BillDelete.as_view(), name='bill_delete'),
     path('inventory/', views.InventoryCreateView.as_view(), name='inventory'),
     path('inventory_log/', views.InventoryLogListView.as_view(), name='inventory_log'),
+    path('bill/item/items_dropdown_options/<str:category>', views.items_dropdown, name='items_dropdown_options'),
+
 ]
 
