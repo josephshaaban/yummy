@@ -8,7 +8,6 @@ class Formset(LayoutObject):
 
     def __init__(self, formset_name_in_context, template=None):
         self.formset_name_in_context = formset_name_in_context
-        self.fields = []
         if template:
             self.template = template
 

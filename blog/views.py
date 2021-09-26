@@ -1,6 +1,6 @@
 from django.db import transaction
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, reverse
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import (
@@ -10,7 +10,7 @@ from django.views.generic import (
 )
 
 from .forms import OrderForm, BaseOrderFormSet, BillModelForm, OrderInlineFormSet, BillForm
-from .models import Bill, Order
+from .models import Bill, Order, Inventory
 
 
 def home(request):
@@ -147,7 +147,7 @@ class BillUpdate(UpdateView):
     model = Bill
     template_name = 'blog/bill_create.html'
     form_class = BillForm
-    success_url = None
+    success_url = ''
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -180,5 +180,23 @@ class BillDelete(DeleteView):
 
 class BillList(ListView):
     model = Bill
-    ordering = '-date_posted'
+    ordering = 'date_posted'
     template_name = 'blog/bill_list.html'
+
+
+class InventoryCreateView(CreateView):
+    model = Inventory
+    fields = ['element', 'price', 'quantity', 'timestamp']
+
+    def form_valid(self, form):
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('inventory_log')
+
+
+class InventoryLogListView(ListView):
+    model = Inventory
+    template_name = 'blog/inventory_log.html'
+    context_object_name = 'inventory_log'
+    ordering = ['-timestamp']

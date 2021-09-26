@@ -29,7 +29,10 @@
             <div class="navbar-nav mr-auto">
               <a class="nav-item nav-link" href="{% url 'home' %}">Home</a>
               <a class="nav-item nav-link" href="{% url 'blog-about' %}">About</a>
-              <a class="nav-item nav-link" href="{% url 'bill_list' %}">Bill</a>
+              <a class="nav-item nav-link" href="{% url 'bill_list' %}">Bills</a>
+              <a class="nav-item nav-link" href="{% url 'bill_create' %}">Add Bill</a>
+              <a class="nav-item nav-link" href="{% url 'inventory' %}">Inventory</a>
+              <a class="nav-item nav-link" href="{% url 'inventory_log' %}">Inventory_Log</a>
             </div>
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
@@ -58,11 +61,12 @@
         </div>
       </div>
     </main>
-
+    {% block js_scripts %}
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="{% static 'blog/jquery-3.2.1.slim.min.js' %}"></script>
+    <script src="{% static 'blog/jquery-3.6.0.min.js' %}"></script>
     <script src="{% static 'blog/popper.min.js' %}"></script>
     <script src="{% static 'blog/bootstrap.min.js' %}"></script>
+    {% endblock %}
 </body>
 </html>

@@ -1,8 +1,4 @@
-{% extends "blog/base.html" %} {% block content %}
-<h3>Orders</h3>
-{% if bill_list %}
-  <div class="d-flex flex-wrap" id='main-div'>
-  {% for bill in bill_list %}
+{% for bill in bill_list %}
       <article class="media content-section mb-1">
         <div class="media-body">
           <div class="article-metadata">
@@ -30,27 +26,3 @@
         </div>
       </article>
   {% endfor %}
-  </div>
-{% else %}
-  <p>There are no Orders to list.</p>
-{% endif %}
-{% endblock %}
-{% block js_scripts %}
-{{ block.super }}
-<script>
-$(document).ready(function()
-{
-    function refresh() {
-      $.ajax({
-          url: '{% url 'bill_list_refresh' %}',
-          success: function(data) {
-          console.log(data);
-              $('#main-div').html(data);
-              setTimeout(refresh, 300);
-          }
-      });
-    };
-    refresh();
-});
-  </script>
-{% endblock %}

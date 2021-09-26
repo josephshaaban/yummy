@@ -5,11 +5,15 @@ from django.forms import widgets
 from django.forms import inlineformset_factory
 from django.utils import timezone
 
-from blog.custom_layout_object import Formset
-from blog.models import Order, Bill
+from .custom_layout_object import Formset
+from .models import Order, Bill, Item, ItemCategories
 
 
 class OrderForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        print(self)
+
     class Meta:
         model = Order
         fields = '__all__'
@@ -24,6 +28,20 @@ class OrderForm(forms.ModelForm):
             })
 
         }
+
+
+class OrderModelForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['category'] = forms.ChoiceField(choices=[(item_category.name, item_category.name) for item_category in ItemCategories],
+                                                    required=False)
+        self.fields['item'].queryset = Item.objects.filter(category=Item.category)
+
+
+    class Meta:
+        model = Order
+        fields = '__all__'
+        field_order = ['category', 'item', 'bread']
 
 
 class BillModelForm(forms.ModelForm):
@@ -50,6 +68,7 @@ class BillForm(forms.ModelForm):
                 Field('client_name'),
                 Field('date_posted'),
                 Field('delivery'),
+                Field('takeaway'),
                 Fieldset(
                     '',
                     Formset('orders'),
@@ -64,7 +83,7 @@ class BillForm(forms.ModelForm):
     #     cleaned_data = super().clean()
     #     cleaned_data['date_posted'] = timezone.now()
     #
-    #     return cleaned_data
+    #     return cleaned_datax`
 
 
 class BaseOrderFormSet(forms.BaseInlineFormSet):
@@ -77,4 +96,4 @@ class BaseOrderFormSet(forms.BaseInlineFormSet):
         )
 
 
-OrderInlineFormSet = inlineformset_factory(Bill, Order, fields='__all__', extra=1)
+OrderInlineFormSet = inlineformset_factory(Bill, Order, OrderModelForm, fields='__all__', extra=1)
