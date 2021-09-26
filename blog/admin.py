@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.forms import BaseInlineFormSet
 
-from blog.forms import OrderForm, OrderInlineFormSet
+from blog.forms import OrderForm, OrderInlineFormSet, OrderModelForm
 from blog.models import Bill, Item, Order
 
 admin.site.register(Item)
