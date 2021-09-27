@@ -1,12 +1,10 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Fieldset, Div, HTML, ButtonHolder, Submit
 from django import forms
-from django.forms import widgets
 from django.forms import inlineformset_factory
-from django.utils import timezone
 
 from .custom_layout_object import Formset
-from .models import Order, Bill, Item, ItemCategories
+from .models import Order, Bill
 
 
 class OrderForm(forms.ModelForm):
@@ -31,19 +29,13 @@ class OrderForm(forms.ModelForm):
 
 
 class OrderModelForm(forms.ModelForm):
-    category = forms.ChoiceField(
-        choices=[(item_category.name, item_category.value) for item_category in ItemCategories],
-        required=False)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # self.fields['item'].queryset = Item.objects.filter(category=Item.category)
-
-    field_order = ['category', 'item', 'bread', 'count', 'meal', 'double', 'notes']
-
     class Meta:
         model = Order
         fields = '__all__'
+        widgets = {
+            'count': forms.NumberInput(attrs={'style': 'width: 80px'}),
+            'notes': forms.Textarea(attrs={'cols': '', 'rows': ''}),
+        }
 
 
 class BillModelForm(forms.ModelForm):

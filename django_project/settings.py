@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'smart_selects'
 ]
 
 MIDDLEWARE = [
@@ -138,3 +139,6 @@ CRISPY_CLASS_CONVERTERS = {
     'select': "form-control cst__radius",
     'checkbox': "checkboxinput custom-control-input"
 }
+
+USE_DJANGO_JQUERY = True
+

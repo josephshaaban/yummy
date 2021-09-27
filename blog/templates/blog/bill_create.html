@@ -7,8 +7,13 @@
             <h1>Create Bill</h1>
         </div>
         <div class="card-body">
-             {% crispy form %}
+            {% crispy form %}
         </div>
     </div>
 </div>
 {% endblock content %}
+{% block js_scripts %}
+{{ block.super }}
+<script src="/static/smart-selects/admin/js/chainedfk.js"></script>
+<script src="/static/smart-selects/admin/js/bindfields.js"></script>
+{% endblock js_scripts %}

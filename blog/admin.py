@@ -1,12 +1,12 @@
 from django.contrib import admin
 from django.forms import BaseInlineFormSet
 
-from blog.forms import OrderForm, OrderInlineFormSet, OrderModelForm
-from blog.models import Bill, Item, Order
+from .forms import OrderForm, OrderInlineFormSet, OrderModelForm
+from .models import Bill, Item, Order, ItemCategory
 
 admin.site.register(Item)
 admin.site.register(Order)
-
+admin.site.register(ItemCategory)
 
 # class OrderInlineFormset(BaseInlineFormSet):
 #     def clean(self):

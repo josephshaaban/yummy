@@ -4,17 +4,18 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import models
 from django.utils import timezone
 from django.forms import widgets
+from smart_selects.db_fields import ChainedForeignKey
 
 
-class ItemCategories(Enum):
-    COLD_MEATS = 'Cold meats'
-    MEATS = 'Meats'
-    HAWADER = 'Hawader'
+class ItemCategory(models.Model):
+    name = models.CharField(max_length=40)
+
+    class Meta:
+        verbose_name_plural = "Item Categories"
 
 
 class Item(models.Model):
-    category = models.CharField(max_length=40,
-                                choices=[(item_category.name, item_category.value) for item_category in ItemCategories])
+    category = models.ForeignKey(ItemCategory, on_delete=models.PROTECT, max_length=40)
     name = models.CharField(
         max_length=40,
         blank=False, null=False,
@@ -58,12 +59,15 @@ class Bill(models.Model):
 
 
 class Order(models.Model):
-    # todo: add delivery prices and bread type
-    item = models.ForeignKey(
+    category = models.ForeignKey(ItemCategory, on_delete=models.PROTECT)
+    item = ChainedForeignKey(
         Item,
-        models.PROTECT,
+        chained_field="category",
+        chained_model_field='category',
+        auto_choose=True, sort=False,
         related_name='orders',
         blank=False, null=False,
+        on_delete=models.PROTECT,
     )
     bread_CHOICES = (
         (0, 'خبز'),
