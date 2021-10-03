@@ -13,6 +13,9 @@ class ItemCategory(models.Model):
     class Meta:
         verbose_name_plural = "Item Categories"
 
+    def __str__(self):
+        return self.name
+
 
 class Item(models.Model):
     category = models.ForeignKey(ItemCategory, on_delete=models.PROTECT, max_length=40)
@@ -74,7 +77,7 @@ class Order(models.Model):
         (700, 'مقرنات')
     )
     bread = models.PositiveIntegerField(choices=bread_CHOICES, default=0)
-    count = models.PositiveIntegerField(blank=False)
+    count = models.PositiveIntegerField(blank=False, default=1)
     double = models.BooleanField(default=False)
     meal = models.BooleanField(default=False)
     notes = models.TextField(

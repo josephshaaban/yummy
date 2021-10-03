@@ -4,7 +4,7 @@ from django import forms
 from django.forms import inlineformset_factory
 
 from .custom_layout_object import Formset
-from .models import Order, Bill
+from .models import Order, Bill, ItemCategory
 
 
 class OrderForm(forms.ModelForm):

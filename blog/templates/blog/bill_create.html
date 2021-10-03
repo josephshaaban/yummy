@@ -16,4 +16,16 @@
 {{ block.super }}
 <script src="/static/smart-selects/admin/js/chainedfk.js"></script>
 <script src="/static/smart-selects/admin/js/bindfields.js"></script>
+<script>
+$(document).ready(function() {
+    $('a.add-row').click(function(){
+        const itemField$ = $('select[id^="id_orders-"][id$="item"]').last();
+        var itemElementName = itemField$.attr('name');
+        categoryElementName = itemElementName.replace('item', 'category');
+
+        itemField$.attr('data-chainfield', categoryElementName);
+        console.log(categoryElementName);
+    })
+})
+</script>
 {% endblock js_scripts %}
