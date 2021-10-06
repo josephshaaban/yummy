@@ -1,0 +1,21 @@
+.custom-control{
+    display: table-cell;
+}
+
+input[type="checkbox"]:checked {
+  background: #FFFA01FF;
+  border: 1px solid #FFFA01FF;
+  border-radius: 30%;
+}
+
+.select2-container {
+  background-color: #2c2c2c;
+  border-color: #FFFA01FF;
+  color: white;
+}
+
+.select2-container--default {
+    background-color: #2c2c2c;
+    border-color: #FFFA01FF;
+    color: white;
+}
