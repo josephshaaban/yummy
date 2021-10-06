@@ -1,20 +1,26 @@
+from crispy_forms.helper import FormHelper
+from dal import autocomplete
+from django.contrib import messages
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db import transaction
+from django.forms import modelformset_factory
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, reverse
+from django.shortcuts import render, reverse, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.views import View
 from django.views.generic import (
     ListView,
     UpdateView, DetailView, DeleteView,
     CreateView,
 )
 
-from .forms import OrderForm, BaseOrderFormSet, BillModelForm, OrderInlineFormSet, BillForm
+from .forms import OrderInlineFormSet, BillModelForm, OrderModelForm
 from .models import Bill, Order, Inventory, Item
 
 
 def home(request):
-    return render(request, 'blog/home.html', {'title':'home'})
+    return render(request, 'blog/home.html', {'title': 'home'})
 
 
 def about(request):
@@ -30,14 +36,6 @@ class OrderCreateView(CreateView):
         return super().form_valid()
 
 
-class BillCreateView(CreateView):
-    model = Bill
-    fields = '__all__'
-
-    def form_valid(self, form):
-        return super().form_valid(form)
-
-
 class BillListView(ListView):
     model = Bill
     template_name = 'blog/recent_bills.html'
@@ -45,6 +43,7 @@ class BillListView(ListView):
     ordering = ['date_posted']
 
 
+# todo: remove this function
 def add_orders_view(request, pk=False):
     if pk:
         bill = Bill.objects.get(
@@ -70,9 +69,7 @@ def add_orders_view(request, pk=False):
                 formset.save()
                 return HttpResponseRedirect(create_bill.get_absolute_url())
             # formset.save()
-    # else:
-    #     formset = OrderFormSet(instance=bill)
-    #     # formset = OrderFormSet()
+
     return render(
         request, 'blog/add_orders.html', {
             'bill_form': bill_form,
@@ -97,7 +94,7 @@ def items_dropdown(request, category):
 class BillCreate(CreateView):
     model = Bill
     template_name = 'blog/bill_create.html'
-    form_class = BillForm
+    form_class = BillModelForm
     success_url = ''
 
     def __init__(self, **kwargs):
@@ -110,11 +107,18 @@ class BillCreate(CreateView):
         kwargs.setdefault('view', self)
         if self.extra_context is not None:
             kwargs.update(self.extra_context)
+        data = self.request.POST or None
+        order_formset = OrderInlineFormSet(self.request.POST, prefix='orders')
+        order_formset_helper = FormHelper()
+        # use tabular formset for the template
+        order_formset_helper.template = 'bootstrap4/table_inline_formset.html'
+        # do not insert the form tag, since we are bundling multiple forms
+        order_formset_helper.form_tag = False
+        # inject the helper into the formset
+        order_formset.helper = order_formset_helper
         if self.request.POST:
-            kwargs['orders'] = OrderInlineFormSet(self.request.POST)
             kwargs['date_posted'] = timezone.now()
-        else:
-            kwargs['orders'] = OrderInlineFormSet()
+        kwargs['orders'] = order_formset
         return kwargs
 
     def form_valid(self, form):
@@ -136,9 +140,6 @@ class BillCreate(CreateView):
     def get_success_url(self):
         return reverse_lazy('bill_create')
 
-    # def get(self, request, *args, **kwargs):
-    #     return self.render_to_response(self.get_context_data())
-
     def post(self, request, *args, **kwargs):
         form = self.get_form()
         # form.data['date_posted'] = timezone.now()
@@ -151,7 +152,7 @@ class BillCreate(CreateView):
 class BillUpdate(UpdateView):
     model = Bill
     template_name = 'blog/bill_create.html'
-    form_class = BillForm
+    form_class = BillModelForm
     success_url = ''
 
     def get_context_data(self, **kwargs):
@@ -205,3 +206,85 @@ class InventoryLogListView(ListView):
     template_name = 'blog/inventory_log.html'
     context_object_name = 'inventory_log'
     ordering = ['-timestamp']
+
+
+# View for autocomplete feature
+class ItemAutocomplete(autocomplete.Select2QuerySetView):
+    """
+    Autocomplete view for type Item
+    """
+    def get_queryset(self):
+        # Don't forget to filter out results depending on the visitor !
+        # if not self.request.user.is_authenticated:
+        #     return Item.objects.none()
+
+        category_id = self.forwarded.get('category_id', None)
+        if not category_id:
+            q_s = Item.objects.all()
+        else:
+            q_s = Item.objects.filter(category_id=category_id).distinct()
+
+        if self.q:
+            q_s = q_s.search(query=self.q)
+
+        return q_s
+
+
+class CreateBillView(View):
+    @staticmethod
+    def create_bill_form(bill_instance=None, data=None):
+        return BillModelForm(data=data, instance=bill_instance)
+
+    @staticmethod
+    def create_order_formset(bill=None, data=None):
+        order_formset_type = modelformset_factory(Order, form=OrderModelForm,
+                                                  extra=1, can_delete=True,)
+        order_formset = order_formset_type(
+            data=data,
+            queryset=Order.objects.filter(bill_id=bill),  # pylint: disable=E1101
+            form_kwargs=dict(bill=bill),
+            prefix='orders',
+        )
+        order_formset_helper = FormHelper()
+        # use tabular formset for the template
+        order_formset_helper.template = 'bootstrap4/table_inline_formset.html'
+        # do not insert the form tag, since we are bundling multiple forms
+        order_formset_helper.form_tag = False
+        # inject the helper into the formset
+        order_formset.helper = order_formset_helper
+        return order_formset
+
+    @staticmethod
+    def render_page(request, bill_form, order_formset):
+        return render(request, 'blog/bill_creation_form.html', context=dict(
+            bill_form=bill_form,
+            order_formset=order_formset,
+        ))
+
+    def get(self, request, bill_id=None):
+        try:
+            bill = Bill.objects.get(pk=bill_id)
+        except MultipleObjectsReturned:
+            return render(request, 'blog/error.html', context=dict(
+                error_main="Bill not found",
+                error_detail="Your bill does not have an associated Yummy Bill record."
+                             "Contact the system administrator for assistance.",
+            ))
+        except ObjectDoesNotExist:
+            bill = None
+
+        bill_form = self.create_bill_form(bill)
+        order_formset = self.create_order_formset(bill)
+        return self.render_page(request, bill_form, order_formset)
+
+    def post(self, request):
+        bill_form = self.create_bill_form(data=request.POST)
+        if bill_form.is_valid():
+            bill = bill_form.save()
+            order_formset = self.create_order_formset(bill=bill, data=request.POST)
+            if order_formset.is_valid():
+                order_formset.save()
+            # messages.success(request, 'Bill details updated.')
+            return HttpResponseRedirect(request.path_info)
+        order_formset = self.create_order_formset(bill=None, data=request.POST)
+        return self.render_page(request, bill_form, order_formset)

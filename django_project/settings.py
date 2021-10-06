@@ -33,13 +33,19 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'blog.apps.BlogConfig',
     'crispy_forms',
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'smart_selects'
+    # 'smart_selects',
+
+    # Autocomplete
+    'dal',  # https://django-autocomplete-light.readthedocs.io/en/master/install.html#configuration
+    # Autocomplete Plugins
+    'dal_select2',
+
+    'django.contrib.admin',
 ]
 
 MIDDLEWARE = [
@@ -57,7 +63,9 @@ ROOT_URLCONF = 'django_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'blog', 'templates'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -121,6 +129,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
@@ -140,5 +149,10 @@ CRISPY_CLASS_CONVERTERS = {
     'checkbox': "checkboxinput custom-control-input"
 }
 
-USE_DJANGO_JQUERY = True
+# change select2 settings to local versions
+SELECT2_JS = "/blog/jquery_select2/select2-4.0.10-dist/js/select2.min.js"
+SELECT2_CSS = "/blog/jquery_select2/select2-4.0.10-dist/css/select2.min.css"
+SELECT2_I18N_PATH = '/blog/jquery_select2/select2-4.0.10-dist/js/i18n'
+
+# USE_DJANGO_JQUERY = True
 

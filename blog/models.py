@@ -1,10 +1,5 @@
-from enum import Enum
-
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import models
 from django.utils import timezone
-from django.forms import widgets
-from smart_selects.db_fields import ChainedForeignKey
 
 
 class ItemCategory(models.Model):
@@ -63,11 +58,8 @@ class Bill(models.Model):
 
 class Order(models.Model):
     category = models.ForeignKey(ItemCategory, on_delete=models.PROTECT)
-    item = ChainedForeignKey(
+    item = models.ForeignKey(
         Item,
-        chained_field="category",
-        chained_model_field='category',
-        auto_choose=True, sort=False,
         related_name='orders',
         blank=False, null=False,
         on_delete=models.PROTECT,

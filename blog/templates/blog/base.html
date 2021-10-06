@@ -1,22 +1,25 @@
-{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
-
+    {% block title %}<title>Yummy Sandwich</title>{% endblock %}
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
-    <!-- <link rel="stylesheet" href="{% static 'blog/style.css' %}"> -->
-    <link rel="stylesheet" href="{% static 'blog/bootstrap.min.css' %}">
+    {% load static %}
+    {% load common_dependencies.tags %}
+    {% jQuery %}
+    {% jQueryUI %}
+    {% bootstrap4 %}
+
+    {# todo: remove bootstrap.min.css after implementing the loading from tags #}
+{#    <link rel="stylesheet" href="{% static 'blog/bootstrap.min.css' %}">#}
     <link rel="stylesheet" type="text/css" href="{% static 'blog/main.css' %}">
 
-    {% if title %}
-        <title>Django Blog - {{ title }}</title>
-    {% else %}
-        <title>Django Blog</title>
-    {% endif %}
+    {% block js %}
+    {% endblock %}
+    {% block css %}
+    {% endblock %}
 </head>
 <body>
     <header class="site-header">
@@ -61,15 +64,5 @@
         </div>
       </div>
     </main>
-    {% block js_scripts %}
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="{% static 'blog/jquery-3.6.0.min.js' %}"></script>
-    <script src="{% static 'blog/popper.min.js' %}"></script>
-    <script src="{% static 'blog/bootstrap.min.js' %}"></script>
-
-<script src="/static/smart-selects/admin/js/chainedfk.js"></script>
-<script src="/static/smart-selects/admin/js/bindfields.js"></script>
-    {% endblock %}
 </body>
 </html>

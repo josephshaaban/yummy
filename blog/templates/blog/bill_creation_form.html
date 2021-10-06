@@ -1,0 +1,75 @@
+{% extends "blog/base.html" %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block js %}
+    {{ block.super }}
+    {{ bill_form.media.js }}
+    {{ order_formset.media.js }}
+    <!-- required for select2 header filter editor and filter form fields -->
+    <script src="{% static 'blog/vendor/select2/dist/js/select2.full.js' %}"></script>
+    <!-- required for MultipleChoiceFormFilter -->
+    <script src="{% static 'blog/django_select2/django_select2.js' %}"></script>
+    <script type="text/javascript" src="{% static 'blog/jquery_select2/select2-4.0.10-dist/js/select2.min.js' %}"></script>
+{% endblock %}
+
+{% block css %}
+    {{ bill_form.media.css }}
+    {{ order_form.media.css }}
+    <link rel="stylesheet" href="{% static 'blog/bill_view.css' %}">
+    <link rel="stylesheet" href="{% static 'blog/vendor/select2/dist/css/select2.min.css' %}">
+    <link href="{% static 'blog/jquery_select2/select2-4.0.10-dist/css/select2.min.css' %}" type="text/css" media="screen" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+  {% for msg in messages %}
+    <div class="alert alert-info alert-dismissable">
+      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+      {{msg.message}}
+    </div>
+  {% endfor %}
+{% endif %}
+
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <h1>Create Bill</h1>
+        </div>
+        <div class="card-body">
+            <form action="" method="post">
+                {% csrf_token %}
+                <div>
+                    {% crispy bill_form %}
+                </div>
+                <div>
+                    <h3>Order</h3>
+                    {% crispy order_formset %}
+                    <input type="button" id="add_more_order" class="btn btn-primary add-form" href="#" value="Add order">
+{#                    <a id="add_more_order" class="add-form" href="#">Add order</a>#}
+                </div>
+                <div class="submit-row mt-2">
+                    <input type="submit" class="btn btn-primary" value="Save">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // dynamic formset for orders, based on https://stackoverflow.com/a/8097617
+    $('#add_more_order').click(function(e) {
+        e.preventDefault();
+        var form_idx = $('#id_orders-TOTAL_FORMS').val();
+        const trEmptyFormElement = $('#div_id_orders-__prefix__-category').parent();
+        const tbodyElement = trEmptyFormElement.parent();
+        const newTr = $("<tr>").html(trEmptyFormElement.html().replace(/__prefix__/g, form_idx));
+        tbodyElement.append(newTr);
+        $('#id_orders-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+    });
+});
+</script>
+{% endblock %}

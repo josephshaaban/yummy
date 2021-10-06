@@ -4,6 +4,11 @@ body {
   margin-top: 5rem;
 }
 
+.container {
+  background: #2c2c2c;
+  color: #FFFA01FF;
+}
+
 nav.navbar.navbar-expand-md {
   background-color: #1d1d1f;
 }
@@ -40,11 +45,15 @@ ul {
 }
 
 .btn-primary {
-  background-color: #444444;
+  background-color: #2c2c2c;
+  border-color: #FFFA01FF;
+  color: white;
 }
 
 .btn-primary:hover {
   background-color: #FFFA01FF;
+  border-color: #FFFA01FF;
+  color: #2c2c2c;
 }
 
 article.content-section {
@@ -91,4 +100,14 @@ input[type="checkbox"]:checked + label::after{
 
 textarea.textarea.form-control {
 
+}
+
+.select2-container {
+  background-color: #2c2c2c;
+  border-color: #FFFA01FF;
+  color: white;
+}
+
+.col-form-label {
+  color: #FFFA01FF;
 }
