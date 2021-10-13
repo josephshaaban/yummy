@@ -32,7 +32,9 @@ class OrderModelForm(forms.ModelForm):
                 'class': 'admin-input-select2',
                 'data-minimum-input-length': 0,  # initial load of items without typing
                 'data-allow-clear': 'true',  # display 'x' in field allowing to clear choice
-                'data-placeholder': ''  # set choice to empty when clearing
+                'data-placeholder': '',  # set choice to empty when clearing
+                'style': 'width: 100%',
+                'data-dropdown-auto-width': 'true',
             }
         )
     )

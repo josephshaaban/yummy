@@ -19,3 +19,16 @@ input[type="checkbox"]:checked {
     border-color: #FFFA01FF;
     color: white;
 }
+
+.select2-selection__choice{
+    margin-top: -5px !important;
+}
+
+/* see https://stackoverflow.com/a/59923156 */
+.select2-selection__rendered{
+    margin-top: -5px !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  color: white !important;
+}
