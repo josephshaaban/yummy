@@ -44,6 +44,8 @@ class Bill(models.Model):
                                            choices=delivery_CHOICES,
                                            default=0)
 
+    ready = models.BooleanField(default=False, null=True, blank=True)
+
     @property
     def cost(self):
         cost_ = 0

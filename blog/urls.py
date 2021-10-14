@@ -29,6 +29,7 @@ urlpatterns = [
         view=ItemAutocomplete.as_view(),
         name='item-autocomplete',
     ),
+    path('bill/<int:pk>/ready/', views.bill_ready_to_deliver, name='bill_ready_to_deliver'),
 
 ]
 

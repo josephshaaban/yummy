@@ -56,7 +56,7 @@ class BillModelForm(DalAdminFormMixin, forms.ModelForm):
     # todo: exclude and validate date_posted
     class Meta:
         model = Bill
-        fields = '__all__'
+        exclude = '__all__'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

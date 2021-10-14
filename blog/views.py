@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db import transaction
 from django.forms import modelformset_factory
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, reverse, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -41,6 +41,7 @@ class BillListView(ListView):
     template_name = 'blog/recent_bills.html'
     context_object_name = 'bills'
     ordering = ['date_posted']
+    queryset = Bill.objects.filter(ready=False)
 
 
 # todo: remove this function
@@ -188,6 +189,7 @@ class BillList(ListView):
     model = Bill
     ordering = 'date_posted'
     template_name = 'blog/bill_list.html'
+    queryset = Bill.objects.filter(ready=False)
 
 
 class InventoryCreateView(CreateView):
@@ -288,3 +290,10 @@ class CreateBillView(View):
             return HttpResponseRedirect(request.path_info)
         order_formset = self.create_order_formset(bill=None, data=request.POST)
         return self.render_page(request, bill_form, order_formset)
+
+
+def bill_ready_to_deliver(request, pk):
+    bill = get_object_or_404(Bill, id=pk)
+    bill.ready = True
+    bill.save()
+    return HttpResponse(status=204)
